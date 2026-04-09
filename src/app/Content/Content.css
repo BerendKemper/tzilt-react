@@ -1,0 +1,29 @@
+#content {
+  padding: 0 var(--component-spacing);
+  flex: 1;
+}
+
+
+
+#top,
+#bottom {
+  height: 0.9rem;
+}
+
+.text-page h2 {
+  margin-top: 0;
+  color: var(--sea);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.page-intro {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  max-width: 68ch;
+}
+
+.text-page p {
+  line-height: 1.7;
+  max-width: 72ch;
+}

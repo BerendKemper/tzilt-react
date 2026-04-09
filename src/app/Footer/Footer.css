@@ -1,0 +1,30 @@
+.site-footer {
+  padding: var(--component-spacing) var(--side-width) calc(var(--component-spacing) * 1.2);
+  border-top: 1px solid rgba(13, 59, 76, 0.2);
+  color: #274852;
+}
+
+.footer-brand {
+  margin-bottom: 0.7rem;
+}
+
+.footer-brand strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--sea);
+  font-size: 1rem;
+}
+
+.footer-brand p {
+  color: #305a67;
+}
+
+.site-footer p {
+  margin: 0.3rem 0;
+}
+
+.site-footer a {
+  color: var(--sunset);
+  text-decoration: none;
+  font-weight: 600;
+}

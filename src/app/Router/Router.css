@@ -1,0 +1,38 @@
+:root {
+  --sand: #f6f1e6;
+  --sea: #0d3b4c;
+  --foam: #d9edf2;
+  --sunset: #cf6f43;
+  --ink: #1e2527;
+  --content-width: min(980px, 100%);
+  --side-width: 1.25rem;
+  --component-spacing: 1.2rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Avenir Next", "Segoe UI", Tahoma, sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(217, 237, 242, 0.45), transparent 45%),
+    linear-gradient(165deg, #fffef8 0%, var(--sand) 42%, #efe5cf 100%);
+}
+
+a {
+  color: inherit;
+}

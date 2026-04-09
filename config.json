@@ -1,0 +1,17 @@
+{
+  "appName": "tzilt-react",
+  "localHostnames": ["localhost", "127.0.0.1"],
+  "api": {
+    "localBase": "http://127.0.0.1:8787",
+    "liveBase": "https://api.tzilt.nl"
+  },
+  "files": {
+    "localBase": "http://127.0.0.1:8787/media",
+    "liveBase": "https://files.tzilt.nl"
+  },
+  "guestWidget": {
+    "localBase": "http://127.0.0.1:5175",
+    "liveBase": "https://guest.reservaboard.com",
+    "organizationId": "org-tzilt"
+  }
+}
