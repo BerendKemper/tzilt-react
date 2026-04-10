@@ -130,7 +130,7 @@ const application = {
             entry.name !== `dist` &&
             entry.name !== `node_modules` &&
             entry.name !== `.vscode` &&
-            entry.name.startsWith(`.env`)
+            !entry.name.startsWith(`.env`)
         )
         .map(entry => fs.promises.rm(entry.name, {
           recursive: entry.isDirectory(),
