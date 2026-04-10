@@ -82,6 +82,8 @@ const application = {
       `package-lock.json`,
       `.vscode/`,
       `.vite/`,
+      `.env`,
+      `.env.*`,
       ``
     ].join(`\n`);
 
@@ -127,7 +129,8 @@ const application = {
             entry.name !== `.git` &&
             entry.name !== `dist` &&
             entry.name !== `node_modules` &&
-            entry.name !== `.vscode`
+            entry.name !== `.vscode` &&
+            entry.startsWith(`.env`)
         )
         .map(entry => fs.promises.rm(entry.name, {
           recursive: entry.isDirectory(),
