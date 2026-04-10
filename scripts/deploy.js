@@ -4,8 +4,30 @@ import path from 'path';
 import { promisify } from 'util';
 
 const execAsync = promisify(childProcess.exec);
+loadEnvFile(path.resolve(`.env.local`));
 const configPath = path.resolve(`config.json`);
 const config = JSON.parse(await fs.promises.readFile(configPath, `utf-8`));
+const cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN ?? ``;
+const cloudflareZoneId = process.env.CLOUDFLARE_ZONE_ID ?? ``;
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return;
+
+  const fileContent = fs.readFileSync(filePath, `utf-8`);
+  for (const rawLine of fileContent.split(/\r?\n/u)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith(`#`)) continue;
+
+    const separatorIndex = line.indexOf(`=`);
+    if (separatorIndex <= 0) continue;
+
+    const key = line.slice(0, separatorIndex).trim();
+    const value = line.slice(separatorIndex + 1).trim();
+    if (!key || process.env[key] !== undefined) continue;
+
+    process.env[key] = value.replace(/^(['"])(.*)\1$/u, `$2`);
+  }
+}
 
 async function run(command) {
   const { stdout, stderr } = await execAsync(command);
@@ -19,6 +41,10 @@ async function runQuiet(command) {
   } catch {
     return false;
   }
+}
+
+function toSiteUrl(relativePath) {
+  return new URL(relativePath, `https://${config.siteDomain}`).toString();
 }
 
 const application = {
@@ -45,15 +71,6 @@ const application = {
     const cnamePath = path.join(`dist`, `CNAME`);
     await fs.promises.mkdir(path.dirname(cnamePath), { recursive: true });
     await fs.promises.writeFile(cnamePath, config.siteDomain, `utf-8`);
-  },
-
-  async makeSpaFallback() {
-    // GitHub Pages serves 404.html for unknown paths; duplicating index.html
-    // there allows client-side routes such as /dashboard to still boot.
-    await fs.promises.copyFile(
-      path.join(`dist`, `index.html`),
-      path.join(`dist`, `404.html`)
-    );
   },
 
   async makeDeployGitIgnore() {
@@ -139,6 +156,37 @@ const application = {
     await run(`git commit -m "Deploy site"`);
   },
 
+  async purgeCloudflareCache() {
+    if (!cloudflareApiToken || !cloudflareZoneId) {
+      console.log(`cloudflare purge skipped: CLOUDFLARE_API_TOKEN or CLOUDFLARE_ZONE_ID is not set`);
+      return;
+    }
+
+    const purgeUrls = [
+      toSiteUrl(`/`),
+      toSiteUrl(`/index.html`)
+    ];
+
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/zones/${cloudflareZoneId}/purge_cache`,
+      {
+        method: `POST`,
+        headers: {
+          Authorization: `Bearer ${cloudflareApiToken}`,
+          "Content-Type": `application/json`
+        },
+        body: JSON.stringify({ files: purgeUrls })
+      }
+    );
+
+    const payload = await response.json();
+    if (!response.ok || payload.success !== true) {
+      throw new Error(`Cloudflare purge failed: ${JSON.stringify(payload)}`);
+    }
+
+    console.log(`cloudflare purge`, purgeUrls);
+  },
+
   async process() {
     // Deploys must start from main so we always publish the intended source.
     const currentBranch = await this.currentBranch();
@@ -155,7 +203,6 @@ const application = {
     await this.build();
 
     await this.makeCNAME();
-    await this.makeSpaFallback();
 
     await this.ensureGhPagesBranch();
 
@@ -165,6 +212,8 @@ const application = {
     await run(`git push origin gh-pages --force`);
 
     await run(`git checkout main`);
+
+    await this.purgeCloudflareCache();
   }
 };
 
