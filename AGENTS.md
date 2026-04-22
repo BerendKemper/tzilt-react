@@ -2,6 +2,11 @@
 
 This repository is the frontend for `tzilt.nl`.
 
+## Agent-Facing Documentation
+- Keep `AGENTS.md`, `PLAN.md`, and other agent-facing docs plain ASCII.
+- Use straight quotes, regular hyphens, and simple Markdown.
+- Avoid smart punctuation, decorative Unicode, and emoji.
+
 ## Linked Repositories
 - Frontend (this repo): `C:/dev/projects/tzilt/tzilt-react`
 - Backend (Cloudflare Worker API): `C:/dev/projects/tzilt/tzilt-cloudflare`
